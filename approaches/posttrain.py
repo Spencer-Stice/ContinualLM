@@ -50,7 +50,6 @@ class Appr(object):
 
     def train(self, model, accelerator, train_dataset,train_loader, train_loader_subset,train_loader_subset_dataset):
 
-
         optimizer = utils.optimize.lookfor_optimize(model,self.args)
 
         # Prepare everything with our `accelerator`.
@@ -99,7 +98,7 @@ class Appr(object):
 
         # We need to recalculate our total training steps as the size of the training dataloader may have changed.
         num_update_steps_per_epoch = math.ceil(len(train_loader) / self.args.gradient_accumulation_steps)
-        self.args.max_train_steps = self.args.num_train_epochs * num_update_steps_per_epoch
+        #self.args.max_train_steps = self.args.num_train_epochs * num_update_steps_per_epoch
 
 
         if accelerator.is_main_process:
@@ -136,7 +135,6 @@ class Appr(object):
                     # break
                     model.train()
                     for step, batch in enumerate(train_loader):
-
                         self, model, outputs = compute_loss.compute(self,model,batch,head_impt,intermediate_impt,output_impt,self_fisher,mask_pre,train_loader,step,accelerator)
                         loss = outputs.loss  # loss 1
                         model = compute_gradient.compute(self,model,head_impt, intermediate_impt, output_impt,batch, loss,buffer,mask_back,outputs,epoch,step,accelerator)
@@ -146,7 +144,7 @@ class Appr(object):
                             update_model.update(self,model,optimizer,outputs,loss,writer,lr_scheduler,progress_bar,global_step,completed_steps,accelerator)
 
                         # break
-                        if completed_steps >= self.args.max_train_steps:
+                        if step >= self.args.max_train_steps:
                             break
 
         except KeyboardInterrupt:  # even if contro-C, I still want to save model

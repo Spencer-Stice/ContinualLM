@@ -219,6 +219,7 @@ class DistillKL(nn.Module):
         p_t = F.softmax(y_t / self.T, dim=1)
 
         loss = F.kl_div(p_s, p_t, size_average=False) * (self.T ** 2) / y_s.shape[0]
+        print("\n\n***KL DIV running***\n\n")
         return loss
 
 def prepare_sequence_posttrain(args):

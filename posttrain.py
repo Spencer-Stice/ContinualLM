@@ -50,14 +50,16 @@ MODEL_TYPES = tuple(conf.model_type for conf in MODEL_CONFIG_CLASSES)
 def main():
 
     args = parseing_posttrain()
-
+    
     args.device = torch.device("cuda" if torch.cuda.is_available() and not args.no_cuda else "cpu")
+
+    
     args = utils.model.prepare_sequence_posttrain(args)
     from approaches.posttrain import Appr
-
-
+    
     # Initialize the accelerator. We will let the accelerator handle device placement for us in this example.
     ddp_kwargs = DistributedDataParallelKwargs(find_unused_parameters=True)
+    
     accelerator = Accelerator(fp16=args.fp16, kwargs_handlers=[ddp_kwargs])
     # Make one log on every process with the configuration for debugging.
     logging.basicConfig(
@@ -65,6 +67,7 @@ def main():
         datefmt="%m/%d/%Y %H:%M:%S",
         level=logging.INFO,
     )
+
     logger.info(accelerator.state)
 
     # Setup logging, we only want one process per machine to log things on the screen.
